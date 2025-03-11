@@ -5,64 +5,84 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PlingifyPlug Product Centre</title>
     <link rel="stylesheet" href="style.css">
-    <link rel="png" href="VintiLogo.png" type="image/x-icon">
-
+    <link rel="icon" href="VintiLogo.png" type="image/png">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: #121212;
+            color: #fff;
+            text-align: center;
+        }
+        .container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+            padding: 40px;
+        }
+        .card {
+            background: #1e1e1e;
+            border-radius: 10px;
+            padding: 20px;
+            width: 300px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
+        .card h3 {
+            color: #00aaff;
+        }
+        .icon-box {
+            display: inline-block;
+            padding: 10px 20px;
+            border-radius: 5px;
+            margin-top: 15px;
+            cursor: pointer;
+            text-transform: uppercase;
+            font-weight: bold;
+        }
+        .available {
+            background: #00aaff;
+            color: #fff;
+        }
+        .unavailable {
+            background: #555;
+            color: #ccc;
+        }
+        .footer {
+            padding: 20px;
+            background: #181818;
+            margin-top: 20px;
+        }
+    </style>
 </head>
 <body>
-    <div id="background-slideshow"></div>
-
     <header>
-        <h1>Product Centre</h1>
+        <h1>PlingifyPlug Product Centre</h1>
     </header>
 
-
-    <div class="card">
-
-      <div class="text">
-        <p class="h3">PASS (Protection Action Security System) – Keeping You Safe</p>
-        <p class="p">PASS is seamlessly integrated across all our platforms, including Vinti, to enhance your online security. Designed to protect users from downloading malicious files and accessing fraudulent or harmful websites, PASS provides an added layer of safety for a secure browsing experience.</p> 
-       <a href="#"> <div class="icon-box">
-          <p class="span">Unavailable</p>
-        </div></a>
-      </div>
-    </div>
-
-
-    <div class="card">
-      <div class="text">
-        <p class="h3">Vinti – A Fast, Efficient, and Secure Browser</p>
-        <p class="p">Vinti is a modern web browser designed for speed, efficiency, and security. With PASS (Protection Action Security System) integrated, Vinti helps keep you safe online by preventing access to malicious sites and harmful downloads. Enjoy seamless browsing, whether you're watching YouTube, shopping, or exploring the web. Vinti is available for both Windows and macOS. To install Vinti, you will first be directed to our download hub, followed by MediaFire, where the installation file is hosted. Simply follow the straightforward setup process. If you require assistance, feel free to contact us.</p> 
-        <a href="https://backuppass.github.io/Downloads"><div class="icon-box">
-          <p class="span">Download</p>
-        </div></a>
-      </div>
-    </div>
-
-
-    <div class="card">
-      <div class="text">
-        <p class="h3">Instonomo AI – Your Smart Assistant for Daily Tasks</p>
-        <p class="p">Instonomo is an advanced AI designed to assist users with their daily tasks. InstonomoAI is integrated in Vinti supporting your needs.</p> 
-
-       <a href="https://backuppass.github.io/InstonomoAI/"> <div class="icon-box">
-          <p class="span">Check it out</p>
-        </div></a>
-      </div>
-    </div>
-
-    <div class="cookie-card" id="cookie-card">
-        <span class="title">🍪 Cookie Notice</span>
-        <p class="description">We use cookies to ensure that we give you the best experience on our website. <a href="https://www.plingifyplug.com/privacy">Read cookies policies</a>. </p>
-        <div class="actions">
-          <button class="accept" id="accept-cookies">
-            Accept
-          </button>
+    <div class="container">
+        <div class="card">
+            <h3>PASS – Protection Action Security System</h3>
+            <p>PASS is seamlessly integrated across all our platforms, including Vinti, to enhance your online security.</p> 
+            <div class="icon-box unavailable">Unavailable</div>
         </div>
-      </div>
 
-    <div class="footer">
-        <p>&copy; 2025 Vinti. All rights reserved. | <a href="https://plingifyplug.com/">PlingifyPlug</a> | <a href="https://plingifyplug.com/contact-us">Support</a> | <a href="https://plingifyplug.com/privacy">Privacy Policy</a></p>
+        <div class="card">
+            <h3>Vinti – Secure and Fast Browser</h3>
+            <p>Vinti offers a modern browsing experience with speed, efficiency, and security. Integrated with PASS, it keeps you safe online.</p>
+            <a href="https://backuppass.github.io/Downloads"><div class="icon-box available">Download</div></a>
+        </div>
+
+        <div class="card">
+            <h3>Instonomo AI – Your Smart Assistant</h3>
+            <p>Instonomo AI helps with daily tasks and is integrated into Vinti for seamless assistance.</p> 
+            <a href="https://backuppass.github.io/InstonomoAI/"><div class="icon-box available">Check it out</div></a>
+        </div>
     </div>
-    <script src="script.js"></script>
+
+    <footer class="footer">
+        <p>&copy; 2025 Vinti. All rights reserved. | <a href="https://plingifyplug.com/">PlingifyPlug</a> | <a href="https://plingifyplug.com/contact-us">Support</a> | <a href="https://plingifyplug.com/privacy">Privacy Policy</a></p>
+    </footer>
 </body>
 </html>
