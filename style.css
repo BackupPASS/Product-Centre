@@ -220,4 +220,9 @@ h1 {
   .accept:hover {
     background-color: rgb(115, 115, 115);
   }
-  
+
+@media screen and (max-width: 600px) {
+    .logo {
+        display: none;
+    }
+}
