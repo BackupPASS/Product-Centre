@@ -44,40 +44,84 @@ h1 {
 
 
 
-.card {
+.card,
+.cardbottom {
   width: auto;
-  background: rgba(255, 255, 255, 0.15);
-  backdrop-filter: saturate(180%) blur(30px);
-  -webkit-backdrop-filter: saturate(180%) blur(30px);
-  
-  border-radius: 15px;
-  
+  background:
+    linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.35) 0%,
+      rgba(255, 255, 255, 0.15) 40%,
+      rgba(255, 255, 255, 0.05) 60%,
+      rgba(255, 255, 255, 0.2) 100%
+    ),
+    rgba(255, 255, 255, 0.1);
+    
+  backdrop-filter: saturate(200%) blur(40px);
+  -webkit-backdrop-filter: saturate(200%) blur(40px);
+
+  border-radius: 20px;
+
   box-shadow:
-    0 8px 32px 0 rgba(31, 38, 135, 0.37),
-    inset 0 0 0 1px rgba(255, 255, 255, 0.18);
-  
+    0 10px 30px 0 rgba(31, 38, 135, 0.4),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.25);
+
+  /* subtle noise texture overlay using base64 pattern */
+  position: relative;
+  overflow: hidden;
+
   transition: background-color 0.3s ease, box-shadow 0.3s ease;
-  
+
   margin: 5% 5% 5% 5%;
 }
 
-
-.cardbottom {
-  width: auto;
-  background: rgba(255, 255, 255, 0.15);
-  backdrop-filter: saturate(180%) blur(30px);
-  -webkit-backdrop-filter: saturate(180%) blur(30px);
-
-  border-radius: 15px;
-
-  box-shadow:
-    0 8px 32px 0 rgba(31, 38, 135, 0.37),
-    inset 0 0 0 1px rgba(255, 255, 255, 0.18);
-
-  transition: background-color 0.3s ease, box-shadow 0.3s ease;
-
-  margin: 5% 5% 10% 5%;
+/* add a subtle animated highlight for extra glassiness */
+.card::before,
+.cardbottom::before {
+  content: "";
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: 
+    radial-gradient(
+      circle at 30% 30%, 
+      rgba(255, 255, 255, 0.2), 
+      transparent 60%
+    ),
+    radial-gradient(
+      circle at 70% 70%, 
+      rgba(255, 255, 255, 0.15), 
+      transparent 60%
+    );
+  pointer-events: none;
+  opacity: 0.3;
+  animation: shimmer 8s linear infinite;
+  border-radius: 20px;
+  mix-blend-mode: screen;
+  z-index: 1;
 }
+
+/* keep content above the shimmer */
+.card > *,
+.cardbottom > * {
+  position: relative;
+  z-index: 2;
+}
+
+@keyframes shimmer {
+  0% {
+    transform: translateX(-25%) translateY(-25%) rotate(0deg);
+  }
+  50% {
+    transform: translateX(25%) translateY(25%) rotate(15deg);
+  }
+  100% {
+    transform: translateX(-25%) translateY(-25%) rotate(0deg);
+  }
+}
+
 
 
 .card:hover {
@@ -134,37 +178,48 @@ h1 {
 .icon-box {
   margin: 10px;
   padding: 12px;
-  background-color: #c0c0c0;
+  background: rgba(40, 40, 40, 0.35); /* Darker semi-transparent background */
+  backdrop-filter: saturate(180%) blur(20px);
+  -webkit-backdrop-filter: saturate(180%) blur(20px);
   border-radius: 10px;
   text-align: center;
+  box-shadow:
+    0 8px 24px rgba(0, 0, 0, 0.3),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.1);
 }
 
 .icon-box .span {
   font-family: system-ui;
   font-size: small;
   font-weight: 500;
-  color: #fff;
+  color: #fff; /* Original white text */
+  text-shadow: none; /* No extra shadows for cleaner text */
 }
 
- .footer {
+.footer {
   color: #fff;
   text-align: center;
-  padding: 8px 0; /* a bit more padding for comfort */
+  padding: 8px 0;
   position: fixed;
   bottom: 0;
   left: 0;
   width: 100%;
   border-radius: 35px 35px 0 0;
   overflow: hidden;
-
-  background: rgba(255, 255, 255, 0.15);
-  backdrop-filter: saturate(180%) blur(30px);
-  -webkit-backdrop-filter: saturate(180%) blur(30px);
-
+  background:
+    linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.35) 0%,
+      rgba(255, 255, 255, 0.15) 40%,
+      rgba(255, 255, 255, 0.05) 60%,
+      rgba(255, 255, 255, 0.2) 100%
+    ),
+    rgba(255, 255, 255, 0.1);
+  backdrop-filter: saturate(200%) blur(40px);
+  -webkit-backdrop-filter: saturate(200%) blur(40px);
   box-shadow:
-    0 8px 32px 0 rgba(31, 38, 135, 0.37),
-    inset 0 0 0 1px rgba(255, 255, 255, 0.18);
-
+    0 10px 30px 0 rgba(31, 38, 135, 0.4),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.25);
   transition: background-color 0.3s ease;
 }
 
@@ -181,27 +236,30 @@ h1 {
  .cookie-card {
   max-width: 320px;
   padding: 1rem;
-  
-  background: rgba(255, 255, 255, 0.15);
-  backdrop-filter: saturate(180%) blur(30px);
-  -webkit-backdrop-filter: saturate(180%) blur(30px);
-  
-  border-radius: 15px;
-  
+  background:
+    linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.35) 0%,
+      rgba(255, 255, 255, 0.15) 40%,
+      rgba(255, 255, 255, 0.05) 60%,
+      rgba(255, 255, 255, 0.2) 100%
+    ),
+    rgba(255, 255, 255, 0.1);
+  backdrop-filter: saturate(200%) blur(40px);
+  -webkit-backdrop-filter: saturate(200%) blur(40px);
+  border-radius: 20px;
   box-shadow:
-    0 8px 32px 0 rgba(31, 38, 135, 0.37),
-    inset 0 0 0 1px rgba(255, 255, 255, 0.18);
-  
-  display: none; /* Hide initially */
-  
+    0 10px 30px 0 rgba(31, 38, 135, 0.4),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.25);
+  display: none;
   position: fixed;
   bottom: 20px;
   right: 20px;
-  
   z-index: 9999;
-  
+  overflow: hidden;
   transition: background-color 0.3s ease, box-shadow 0.3s ease;
 }
+
   
   .title {
     font-weight: 600;
