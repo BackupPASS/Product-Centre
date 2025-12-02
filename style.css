@@ -1,0 +1,276 @@
+  :root{
+    --glass: rgba(255,255,255,.10);
+      --glass2: rgba(255,255,255,.14);
+      --ring: rgba(255, 255, 255, 0.35);
+      --text: #e8f0ff;
+      --muted:#b9c1d5;
+      --ok:#22c55e;
+      --warn:#fbbf24;
+      --danger:#ef4444;
+      --pri:#5ac8fa;
+      --bg-dark: rgba(0,0,0,.45);
+      --card:#141a27;
+      --shadow: 0 10px 30px rgba(0,0,0,.15);
+      --radius: 16px;
+    }
+
+    *{box-sizing:border-box}
+
+    html,body{
+      height:100%;
+      margin:0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol", sans-serif;
+      color: var(--text);
+      background: url('image2.jpg') center/cover no-repeat fixed;
+    }
+
+    body{
+      position:relative;
+    }
+
+    .shade{
+      position:fixed; inset:0;
+      background:linear-gradient(180deg, rgba(10,12,18,.35), rgba(10,12,18,.7));
+      pointer-events:none;
+    }
+
+    .wrap{
+      position:relative;
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 22px 16px 32px;
+      min-height: 100dvh;
+    }
+
+    /* Main glass panel similar to Status */
+    .panel{
+      background: var(--glass);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid rgba(255,255,255,.12);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 18px;
+    }
+
+    .header{
+      display:flex; align-items:center; justify-content:space-between; gap:14px;
+      padding: 8px 4px 18px 4px;
+      border-bottom: 1px solid rgba(255,255,255,.12);
+      margin-bottom: 16px;
+    }
+
+    .brand-row{
+      display:flex; align-items:center; gap:10px;
+    }
+
+    .logo{
+      width:38px; height:38px; border-radius:12px; object-fit:cover;
+    }
+
+    h1{
+      font-family:'Alba', sans-serif;
+      font-size: 24px;
+      margin:0;
+      letter-spacing:.3px;
+    }
+
+    .subhead{
+      color:var(--muted);
+      font-size:12px;
+    }
+
+    .toolbar{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+      justify-content:flex-end;
+    }
+
+    .btn{
+      all:unset; cursor:pointer;
+      color:#fff;
+      padding:8px 12px; border-radius:10px; font-size:13px;
+      border:1px solid rgba(255,255,255,.08);
+    }
+    .btn:hover{background:#adadad}
+    .btn.ghost{background:transparent}
+    .btn.ghost:hover{background: rgba(255,255,255,.06)}
+
+    .pill{
+      display:inline-flex;
+      padding:3px 8px;
+      border-radius:999px;
+      font-size:11px;
+      border:1px solid rgba(255,255,255,.20);
+      background:rgba(0,0,0,.20);
+      color:var(--muted);
+    }
+
+    /* Grid + cards (Settings style) */
+
+    .grid{
+      display:grid; gap:14px;
+      grid-template-columns: repeat(12, 1fr);
+    }
+    .col-12{grid-column: span 12}
+    .col-8{grid-column: span 8}
+    .col-6{grid-column: span 6}
+    .col-4{grid-column: span 4}
+
+    @media(max-width:900px){
+      .grid{grid-template-columns: repeat(12, 1fr);}
+      .col-8,.col-6,.col-4{grid-column: span 12}
+      .header{flex-direction:column; align-items:flex-start;}
+      .toolbar{justify-content:flex-start;}
+    }
+
+    .card,
+    .cardbottom{
+      background: rgba(0,0,0,.45);
+      border: 1px solid rgba(255,255,255,.10);
+      border-radius: 14px;
+      padding: 14px;
+      position:relative;
+      overflow:hidden;
+    }
+
+    .card::before,
+    .cardbottom::before{
+      content:"";
+      position:absolute;
+      inset:-40%;
+      background:
+        radial-gradient(circle at 20% 20%, rgba(255,255,255,.18), transparent 60%),
+        radial-gradient(circle at 80% 80%, rgba(90,200,250,.12), transparent 60%);
+      opacity:.28;
+      mix-blend-mode:screen;
+      pointer-events:none;
+    }
+
+    .card > *,.cardbottom > *{
+      position:relative;
+      z-index:1;
+    }
+
+    .card h2{
+      margin:0 0 8px 0; font-size:18px;
+    }
+
+    .card .sub{
+      color:var(--muted);
+      font-size:12px;
+      margin-bottom:8px;
+    }
+
+    .text{
+      font-size:13px;
+      color:var(--muted);
+      line-height:1.5;
+    }
+
+    .tag-row{
+      display:flex;
+      flex-wrap:wrap;
+      gap:6px;
+      margin-bottom:8px;
+    }
+
+    .tag{
+      padding:3px 8px;
+      border-radius:999px;
+      font-size:11px;
+      border:1px solid rgba(255,255,255,.18);
+      background:rgba(255,255,255,.04);
+      color:var(--muted);
+    }
+
+    .tag.warn{
+      border-color:rgba(251,191,36,.6);
+      color:#fef3c7;
+      background:rgba(251,191,36,.16);
+    }
+
+    .tag.accent{
+      border-color:rgba(90,200,250,.6);
+      color:#e0f2fe;
+      background:rgba(90,200,250,.18);
+    }
+
+    .actions-row{
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+      margin-top:10px;
+    }
+
+    .mono{
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+    }
+
+    a{text-decoration:none;color:inherit;}
+
+
+.cookie-card {
+  max-width: 340px;
+  padding: 0.9rem 1.1rem;
+  background: rgba(0, 0, 0, 0.188);             
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-radius: 14px;                          
+  box-shadow: var(--shadow);
+  display: none;
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 9999;
+  border: 1px solid rgba(255, 255, 255, 0.10);  
+}
+
+.cookie-card .title {
+  font-weight: 600;
+  color: var(--text);
+  font-size: 14px;
+}
+
+.cookie-card .description {
+  margin-top: 0.75rem;
+  font-size: 12px;
+  line-height: 1.4;
+  color: var(--muted);
+}
+
+.cookie-card .description a {
+  color: var(--pri);
+}
+
+.cookie-card .description a:hover {
+  text-decoration: underline;
+}
+
+.cookie-card .actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 0.75rem;
+  gap: 8px;
+}
+
+.cookie-card .accept {
+  font-size: 12px;
+  font-weight: 500;
+  border-radius: 10px;
+  padding: 0.45rem 0.95rem;
+  cursor: pointer;
+  background: #00000016;                             
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.cookie-card .accept:hover {
+  background: #1a1a1a;
+}
+
+
+    @media(max-width:600px){
+      .logo{display:none;}
+    }
