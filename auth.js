@@ -449,6 +449,12 @@ function ensureOverlay() {
 
     </div>
 
+    <div class="auth-divider"></div>
+
+    <div class="auth-sub" style="margin-top:10px;">
+          By continuing you agree to the Vinti's & the Account<a href="https://plingifyplug.odoo.com/Privacy"> ToS and Privacy Policy</a>.
+        </div>
+
   </div>
 
 
