@@ -245,6 +245,17 @@ const CSS = `
   background: rgba(239,68,68,.15);
 }
 
+#btnDeleteConfirm:disabled{
+  opacity:.45;
+  cursor:not-allowed;
+  filter:grayscale(.4);
+}
+
+#btnDeleteConfirm:not(:disabled){
+  opacity:1;
+  filter:none;
+}
+
 #vintiAuthOverlay .btn.warn,
 #vPwOverlay .btn.warn{
   border-color: rgba(251,191,36,.35);
@@ -349,7 +360,7 @@ function ensureOverlay() {
 
   ov.innerHTML = `
 
-    <div class="auth-card">
+    <div class="auth-card" id="accountCard">
 
       <div class="auth-top">
 
@@ -434,6 +445,7 @@ function ensureOverlay() {
       placeholder="••••••••"
     >
 
+    
 
     <div class="auth-actions">
 
@@ -493,36 +505,39 @@ function ensureOverlay() {
 
 
 
-    <div class="auth-actions">
+<div class="auth-actions">
+
+  <button 
+    class="btn ghost danger"
+    id="vBtnDeleteMeLogged"
+  >
+    Delete my account
+  </button>
 
 
-      <button 
-        class="btn ghost danger"
-        id="vBtnDeleteMeLogged"
-      >
-        Delete my account
-      </button>
+  <div style="flex:1"></div>
 
 
-      <div style="flex:1"></div>
-
-
-      <button 
-        class="btn"
-        id="vBtnSignOutLogged"
-      >
-        Sign out
-      </button>
-
-
-    </div>
-
-
-  </div>
-
+  <button 
+    class="btn"
+    id="vBtnSignOutLogged"
+  >
+    Sign out
+  </button>
 
 </div>
 
+
+</div> <!-- closes vLoggedInContent -->
+
+
+</div> <!-- closes auth-body -->
+
+
+</div> <!-- closes accountCard -->
+
+
+<!-- DELETE OVERLAY MUST BE OUTSIDE accountCard -->
 <div id="deleteAccountOverlay" style="display:none;">
 
   <div class="auth-card auth-style">
@@ -552,8 +567,7 @@ function ensureOverlay() {
 
     <div class="auth-body">
 
-
-      <div class="tp-warning" style="display:block;">
+      <div class="tp-warning">
 
         <div class="tp-warning-title">
           Are you sure?
@@ -575,34 +589,39 @@ function ensureOverlay() {
           </ul>
 
 
-<div style="margin-top:12px;">
-  Please wait <b id="deleteCountdown">3</b> seconds before confirming.
-</div>
+          <div style="margin-top:12px;">
+            Please wait <b id="deleteCountdown">3</b> seconds before confirming.
+          </div>
 
 
-<div id="deletePasswordBox" style="display:none; margin-top:14px;">
+          <div id="deletePasswordBox" style="display:none; margin-top:14px;">
 
-  <label class="auth-label">
-    Confirm your password
-  </label>
+            <label class="auth-label">
+              Confirm your password
+            </label>
 
-  <input
-    class="auth-input"
-    id="deletePasswordInput"
-    type="password"
-    placeholder="••••••••"
-  >
+            <input
+              class="auth-input"
+              id="deletePasswordInput"
+              type="password"
+              placeholder="••••••••"
+            >
 
-</div>
+            <div 
+  class="auth-msg" 
+  id="deleteAccountMsg"
+  style="margin-top:10px;"
+></div>
+
+          </div>
+
 
         </div>
 
       </div>
 
 
-
       <div class="auth-actions">
-
 
         <button class="btn ghost" id="btnDeleteCancel">
           Cancel
@@ -612,19 +631,20 @@ function ensureOverlay() {
         <div style="flex:1"></div>
 
 
-        <button 
-          class="btn danger" 
-          id="btnDeleteConfirm"
-          disabled
-        >
-          Delete Account
-        </button>
-
+<button 
+  class="btn danger"
+  id="btnDeleteConfirm"
+  disabled
+>
+  Delete Account (3)
+</button>
 
       </div>
 
 
     </div>
+
+  </div>
 
 
   </div>
@@ -653,6 +673,7 @@ const btnDelete = document.getElementById("vBtnDeleteMeLogged");
 
 const btnDeleteCancel = document.getElementById("btnDeleteCancel");
 const btnDeleteConfirm = document.getElementById("btnDeleteConfirm");
+const deleteAccountMsg = document.getElementById("deleteAccountMsg");
 
 const tabSign = document.getElementById("vTabSignIn");
 const tabRegister = document.getElementById("vTabCreate");
@@ -672,7 +693,13 @@ function showMessage(text, type){
 
 }
 
+function showDeleteMessage(text, type){
 
+  deleteAccountMsg.textContent = text;
+  deleteAccountMsg.className = "auth-msg " + type;
+  deleteAccountMsg.style.display = "block";
+
+}
 
 closeBtn.onclick = () => {
 
@@ -680,12 +707,13 @@ closeBtn.onclick = () => {
 
 };
 
-btnDeleteCancel.onclick = ()=>{
+btnDeleteCancel.onclick = () => {
 
   document.getElementById("deleteAccountOverlay").style.display = "none";
 
-};
+  document.getElementById("accountCard").style.display = "block";
 
+};
 
 tabSign.onclick = () => {
 
@@ -826,46 +854,71 @@ btnSignOut.onclick = async () => {
 
 btnDelete.onclick = () => {
 
-  const overlay = document.getElementById("deleteAccountOverlay");
+  const deleteOverlay = document.getElementById("deleteAccountOverlay");
 
-  overlay.style.display="flex";
+  document.getElementById("accountCard").style.display = "none";
+
+  deleteOverlay.style.display = "flex";
 
 
   let seconds = 3;
 
-const countdown = document.getElementById("deleteCountdown");
-const confirm = document.getElementById("btnDeleteConfirm");
-const passwordBox = document.getElementById("deletePasswordBox");
+  const countdown = document.getElementById("deleteCountdown");
+  const confirm = document.getElementById("btnDeleteConfirm");
+  const passwordBox = document.getElementById("deletePasswordBox");
+  const passwordInput = document.getElementById("deletePasswordInput");
 
 
-confirm.disabled = true;
+  confirm.disabled = true;
+  confirm.textContent = "Delete Account (3)";
+  confirm.style.opacity = ".45";
+
+  passwordBox.style.display = "none";
 
 
-const timer = setInterval(()=>{
+  const timer = setInterval(() => {
 
-  seconds--;
+    seconds--;
 
-  countdown.textContent = seconds;
-
-
-  if(seconds <= 0){
-
-    clearInterval(timer);
+    countdown.textContent = seconds;
+    confirm.textContent = `Delete Account (${seconds})`;
 
 
-    passwordBox.style.display = "block";
+    if(seconds <= 0){
+
+      clearInterval(timer);
+
+      passwordBox.style.display = "block";
+
+      confirm.textContent = "Delete Account";
+
+      // Still disabled until password entered
+      confirm.disabled = true;
+
+    }
+
+  },1000);
 
 
-    confirm.disabled = false;
 
-    confirm.textContent = "Delete Account";
+  passwordInput.oninput = () => {
 
-  }
+    if(passwordInput.value.trim().length > 0){
 
+      confirm.disabled = false;
+      confirm.style.opacity = "1";
 
-},1000);
+    } else {
+
+      confirm.disabled = true;
+      confirm.style.opacity = ".45";
+
+    }
+
+  };
 
 };
+
 
 btnDeleteConfirm.onclick = async ()=>{
 
@@ -892,10 +945,14 @@ btnDeleteConfirm.onclick = async ()=>{
     );
 
 
-    await deleteUser(user);
+await deleteUser(user);
 
+document.getElementById("deleteAccountOverlay").style.display = "none";
+document.getElementById("accountCard").style.display = "block";
+document.getElementById("vintiAuthOverlay").style.display = "none";
 
-    document.getElementById("deleteAccountOverlay").style.display="none";
+document.getElementById("deletePasswordInput").value = "";
+
 
 
     showMessage(
@@ -906,14 +963,31 @@ btnDeleteConfirm.onclick = async ()=>{
 
   } catch(error){
 
+  let message = "Unable to delete account.";
 
-    showMessage(
-      error.message,
-      "bad"
-    );
+  switch(error.code){
 
+    case "auth/invalid-credential":
+      message = "Incorrect password.";
+      break;
+
+    case "auth/wrong-password":
+      message = "Incorrect password.";
+      break;
+
+    case "auth/requires-recent-login":
+      message = "Please sign in again before deleting your account.";
+      break;
 
   }
+
+
+  showDeleteMessage(
+    message,
+    "bad"
+  );
+
+}
 
 };
 }
@@ -933,11 +1007,17 @@ const accountButton = document.getElementById("accountButton");
 
 document.getElementById("accountButton").onclick = () => {
 
-    document.getElementById("vintiAuthOverlay").style.display="flex";
+    const authOverlay = document.getElementById("vintiAuthOverlay");
+    const deleteOverlay = document.getElementById("deleteAccountOverlay");
+    const accountCard = document.getElementById("accountCard");
+
+    deleteOverlay.style.display = "none";
+
+    accountCard.style.display = "block";
+
+    authOverlay.style.display = "flex";
 
 };
-
-
 
 onAuthStateChanged(auth,(user)=>{
 
