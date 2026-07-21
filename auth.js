@@ -487,6 +487,18 @@ function ensureOverlay() {
       Email
     </div>
 
+    <label class="auth-label">
+  Account ID
+</label>
+
+
+<div 
+  class="auth-input"
+  id="vAccountUID"
+>
+  Account ID
+</div>
+
 
     <div class="auth-actions">
 
@@ -1024,6 +1036,7 @@ onAuthStateChanged(auth,(user)=>{
     const loggedOut = document.getElementById("vLoggedOutContent");
     const loggedIn = document.getElementById("vLoggedInContent");
     const accountEmail = document.getElementById("vAccountEmail");
+    const accountUID = document.getElementById("vAccountUID");
     const accountButton = document.getElementById("accountButton");
     const accountSubtitle = document.getElementById("vAccountSubtitle");
 
@@ -1048,6 +1061,12 @@ onAuthStateChanged(auth,(user)=>{
         accountEmail.textContent = user.email;
 
 
+        // Show Account ID (Firebase UID)
+        if(accountUID){
+            accountUID.textContent = user.uid;
+        }
+
+
     } else {
 
         authTabs.style.display = "flex";
@@ -1063,7 +1082,27 @@ onAuthStateChanged(auth,(user)=>{
         
         accountSubtitle.textContent = "Sign In or Register to access PlingifyPlug";
 
+
+        if(accountUID){
+            accountUID.textContent = "";
+        }
+
     }
+
+
+    // Make user available to other scripts
+    window.firebaseAuthUser = user || null;
+
+
+    // Continue pending downloads after login
+    if(user && window.pendingDownload){
+
+        const url = window.pendingDownload;
+        window.pendingDownload = null;
+
+        window.location.href = url;
+    }
+
 
 });
 
@@ -1075,16 +1114,3 @@ window.openVintiAuth = function () {
     }
 };
 
-onAuthStateChanged(auth, (user)=>{
-
-    window.firebaseAuthUser = user || null;
-
-    if(user && window.pendingDownload){
-
-        const url = window.pendingDownload;
-        window.pendingDownload = null;
-
-        window.location.href = url;
-    }
-
-});
