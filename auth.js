@@ -1066,3 +1066,25 @@ onAuthStateChanged(auth,(user)=>{
     }
 
 });
+
+window.openVintiAuth = function () {
+    const overlay = document.getElementById("vintiAuthOverlay");
+
+    if (overlay) {
+        overlay.style.display = "flex";
+    }
+};
+
+onAuthStateChanged(auth, (user)=>{
+
+    window.firebaseAuthUser = user || null;
+
+    if(user && window.pendingDownload){
+
+        const url = window.pendingDownload;
+        window.pendingDownload = null;
+
+        window.location.href = url;
+    }
+
+});
