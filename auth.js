@@ -6,11 +6,13 @@ import {
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
   sendPasswordResetEmail,
+  sendEmailVerification,
   onAuthStateChanged,
   signOut,
   deleteUser,
   reauthenticateWithCredential,
-  EmailAuthProvider
+  EmailAuthProvider,
+  updateProfile
 } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-auth.js";
 
 
@@ -474,6 +476,31 @@ function ensureOverlay() {
   <!-- Logged in view -->
   <div id="vLoggedInContent" style="display:none;">
 
+<label class="auth-label" id="vAuthNameLabel">
+  Display Name
+</label>
+
+
+<div style="display:flex; gap:8px;">
+
+<input
+  class="auth-input"
+  id="vAccountName"
+  style="flex:1;"
+  value="No name set"
+  readonly
+>
+
+<button 
+  class="btn ghost"
+  id="vEditName"
+>
+  Edit
+</button>
+
+
+</div>
+
 
     <label class="auth-label">
       Signed in as
@@ -488,17 +515,70 @@ function ensureOverlay() {
     </div>
 
     <label class="auth-label">
-  Account ID
+  Account Created
 </label>
-
 
 <div 
   class="auth-input"
-  id="vAccountUID"
+  id="vAccountCreated"
 >
-  Account ID
+  Unknown
 </div>
 
+<label class="auth-label">
+  Email Status
+</label>
+
+<div style="display:flex; gap:8px;">
+
+<div 
+  class="auth-input"
+  id="vEmailStatus"
+  style="flex:1;"
+>
+  Unknown
+</div>
+
+<button 
+  class="btn ghost"
+  id="vVerifyEmail"
+>
+  Verify
+</button>
+
+</div>
+
+   <label class="auth-label">
+  Account ID
+</label>
+
+<div style="position:relative;">
+
+  <div
+    class="auth-input"
+    id="vAccountUID"
+    style="padding-right:45px;"
+  >
+    ••••••••••••••••
+  </div>
+
+  <button
+    id="toggleUID"
+    class="btn ghost"
+    type="button"
+    style="
+      position:absolute;
+      right:4px;
+      top:50%;
+      transform:translateY(-50%);
+      padding:6px 10px;
+      min-width:auto;
+    "
+  >
+    Show
+  </button>
+
+</div>
 
     <div class="auth-actions">
 
@@ -672,6 +752,7 @@ function ensureOverlay() {
 
 const emailInput = document.getElementById("vAuthEmail");
 const passInput = document.getElementById("vAuthPass");
+const nameInputRegister = document.getElementById("vAuthName");
 
 const msg = document.getElementById("vAuthMsg");
 
@@ -692,10 +773,124 @@ const tabRegister = document.getElementById("vTabCreate");
 
 const closeBtn = document.getElementById("auth-close");
 
+const editNameBtn = document.getElementById("vEditName");
+const accountName = document.getElementById("vAccountName");
+const verifyEmailBtn = document.getElementById("vVerifyEmail");
 
 let registerMode = false;
 
+let editingName = false;
 
+editNameBtn.onclick = async () => {
+
+  const user = auth.currentUser;
+
+  if(!user) return;
+
+
+  if(!editingName){
+
+    editingName = true;
+
+    accountName.removeAttribute("readonly");
+    accountName.focus();
+
+    accountName.select();
+
+    editNameBtn.textContent = "Save";
+
+
+  } else {
+
+
+    const newName = accountName.value.trim();
+
+
+    await updateProfile(user,{
+      displayName:newName
+    });
+
+
+    accountName.value = newName || "No name set";
+
+    accountName.setAttribute("readonly", true);
+
+    editNameBtn.textContent = "Edit";
+
+    editingName = false;
+
+  }
+
+};
+
+verifyEmailBtn.onclick = async () => {
+
+    const user = auth.currentUser;
+
+    if(!user) return;
+
+
+    try {
+
+        // First click: send verification email
+        if (verifyEmailBtn.dataset.state !== "sent") {
+
+            await sendEmailVerification(user);
+
+            verifyEmailBtn.dataset.state = "sent";
+            verifyEmailBtn.textContent = "Refresh verification";
+
+            showMessage(
+                "Verification email sent. Check your inbox.",
+                "good"
+            );
+
+            return;
+        }
+
+
+        // Second click: check verification status
+        await user.reload();
+
+        const refreshedUser = auth.currentUser;
+
+
+        if(refreshedUser.emailVerified){
+
+            document.getElementById("vEmailStatus").textContent = "Verified";
+
+
+            // Remove button completely
+            verifyEmailBtn.style.display = "none";
+
+
+            showMessage(
+                "Email verified successfully.",
+                "good"
+            );
+
+
+        } else {
+
+
+            showMessage(
+                "Email is not verified yet.",
+                "bad"
+            );
+
+        }
+
+
+    } catch(error){
+
+        showMessage(
+            error.message,
+            "bad"
+        );
+
+    }
+
+};
 
 function showMessage(text, type){
 
@@ -726,6 +921,7 @@ btnDeleteCancel.onclick = () => {
   document.getElementById("accountCard").style.display = "block";
 
 };
+
 
 tabSign.onclick = () => {
 
@@ -766,17 +962,24 @@ btnGo.onclick = async () => {
     if(registerMode){
 
 
-      await createUserWithEmailAndPassword(
-        auth,
-        emailInput.value,
-        passInput.value
-      );
+const cred = await createUserWithEmailAndPassword(
+  auth,
+  emailInput.value,
+  passInput.value
+);
 
 
-      showMessage(
-        "Account created successfully.",
-        "good"
-      );
+await updateProfile(cred.user, {
+  displayName: emailInput.value.split("@")[0]
+});
+
+auth.currentUser.reload();
+
+
+showMessage(
+  "Account created successfully.",
+  "good"
+);
 
 
     } else {
@@ -1016,6 +1219,36 @@ document.getElementById("auth-close").onclick = () => {
 
 const accountButton = document.getElementById("accountButton");
 
+let realUID = "";
+let uidVisible = false;
+
+const toggleUID = document.getElementById("toggleUID");
+
+toggleUID.onclick = () => {
+
+    const uidBox = document.getElementById("vAccountUID");
+    const user = auth.currentUser;
+
+    if(!user){
+        console.log("No logged in user");
+        return;
+    }
+
+    uidVisible = !uidVisible;
+
+    if(uidVisible){
+
+        uidBox.textContent = user.uid;
+        toggleUID.textContent = "Hide";
+
+    } else {
+
+        uidBox.textContent = "••••••••••••••••";
+        toggleUID.textContent = "Show";
+
+    }
+
+};
 
 document.getElementById("accountButton").onclick = () => {
 
@@ -1031,12 +1264,14 @@ document.getElementById("accountButton").onclick = () => {
 
 };
 
-onAuthStateChanged(auth,(user)=>{
+onAuthStateChanged(auth,async (user)=>{
 
     const loggedOut = document.getElementById("vLoggedOutContent");
     const loggedIn = document.getElementById("vLoggedInContent");
     const accountEmail = document.getElementById("vAccountEmail");
     const accountUID = document.getElementById("vAccountUID");
+    const accountCreated = document.getElementById("vAccountCreated");
+    const emailStatus = document.getElementById("vEmailStatus");
     const accountButton = document.getElementById("accountButton");
     const accountSubtitle = document.getElementById("vAccountSubtitle");
 
@@ -1044,6 +1279,13 @@ onAuthStateChanged(auth,(user)=>{
 
 
     if(user){
+
+      await user.reload();
+
+      const currentUser = auth.currentUser;
+
+document.getElementById("vAccountName").value =
+    user.displayName || "No name set";
 
         // Change top button
         accountButton.textContent = user.email;
@@ -1060,12 +1302,53 @@ onAuthStateChanged(auth,(user)=>{
         // Show email
         accountEmail.textContent = user.email;
 
+        if(accountCreated){
 
-        // Show Account ID (Firebase UID)
-        if(accountUID){
-            accountUID.textContent = user.uid;
-        }
+    const created = new Date(user.metadata.creationTime);
 
+    accountCreated.textContent =
+        created.toLocaleDateString();
+
+}
+
+if(emailStatus){
+
+if(currentUser.emailVerified){
+
+    emailStatus.textContent = "Verified";
+
+    verifyEmailBtn.style.display = "none";
+
+
+} else {
+
+    emailStatus.textContent = "Not verified";
+
+    verifyEmailBtn.style.display = "block";
+
+    verifyEmailBtn.dataset.state = "";
+
+    verifyEmailBtn.textContent = "Verify";
+
+}
+
+}
+
+if(accountUID){
+
+    accountUID.dataset.uid = user.uid;
+
+    accountUID.textContent = "••••••••••••••••";
+
+    uidVisible = false;
+
+    const toggleUID = document.getElementById("toggleUID");
+
+    if(toggleUID){
+        toggleUID.textContent = "Show";
+    }
+
+}
 
     } else {
 
@@ -1083,9 +1366,11 @@ onAuthStateChanged(auth,(user)=>{
         accountSubtitle.textContent = "Sign In or Register to access PlingifyPlug";
 
 
-        if(accountUID){
-            accountUID.textContent = "";
-        }
+if(accountUID){
+    realUID = "";
+    uidVisible = false;
+    accountUID.textContent = "••••••••••••••••";
+}
 
     }
 
