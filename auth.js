@@ -15,7 +15,7 @@ import {
   updateProfile
 } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-auth.js";
 
-
+const ACCOUNT_SYSTEM_VERSION = "1.57.1";
 
 const CSS = `
 #vintiAuthOverlay .auth-msg,
@@ -329,6 +329,15 @@ body.app-locked > :not(#vintiAuthOverlay):not(#vPwOverlay){
   font-size:13px;
   color:#fee2e2;
 }
+
+.auth-system-version {
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px solid rgba(255,255,255,.12);
+  text-align: center;
+  font-size: 11px;
+  color: rgba(255,255,255,.55);
+}
 `;
 
 
@@ -552,7 +561,7 @@ function ensureOverlay() {
   Account ID
 </label>
 
-<div style="position:relative;">
+<div style="position:relative; display:flex; gap:8px;">
 
   <div
     class="auth-input"
@@ -566,14 +575,7 @@ function ensureOverlay() {
     id="toggleUID"
     class="btn ghost"
     type="button"
-    style="
-      position:absolute;
-      right:4px;
-      top:50%;
-      transform:translateY(-50%);
-      padding:6px 10px;
-      min-width:auto;
-    "
+
   >
     Show
   </button>
@@ -748,6 +750,17 @@ function ensureOverlay() {
 
   document.body.appendChild(ov);
 
+const versionText = document.createElement("div");
+
+versionText.className = "auth-system-version";
+
+versionText.textContent = 
+  `Account System Version - ${ACCOUNT_SYSTEM_VERSION}`;
+
+document.querySelectorAll(".auth-card").forEach(card => {
+    card.appendChild(versionText.cloneNode(true));
+});
+
 
 
 const emailInput = document.getElementById("vAuthEmail");
@@ -826,13 +839,11 @@ editNameBtn.onclick = async () => {
 verifyEmailBtn.onclick = async () => {
 
     const user = auth.currentUser;
-
-    if(!user) return;
-
+    if (!user) return;
 
     try {
 
-        // First click: send verification email
+        // First click sends the email
         if (verifyEmailBtn.dataset.state !== "sent") {
 
             await sendEmailVerification(user);
@@ -848,30 +859,27 @@ verifyEmailBtn.onclick = async () => {
             return;
         }
 
-
-        // Second click: check verification status
+        // Second click refreshes the user
         await user.reload();
 
         const refreshedUser = auth.currentUser;
 
-
-        if(refreshedUser.emailVerified){
+        if (refreshedUser.emailVerified) {
 
             document.getElementById("vEmailStatus").textContent = "Verified";
 
-
-            // Remove button completely
             verifyEmailBtn.style.display = "none";
 
+            verifyEmailBtn.dataset.state = "";
 
             showMessage(
                 "Email verified successfully.",
                 "good"
             );
 
-
         } else {
 
+            document.getElementById("vEmailStatus").textContent = "Not verified";
 
             showMessage(
                 "Email is not verified yet.",
@@ -880,8 +888,7 @@ verifyEmailBtn.onclick = async () => {
 
         }
 
-
-    } catch(error){
+    } catch (error) {
 
         showMessage(
             error.message,
@@ -1274,15 +1281,16 @@ onAuthStateChanged(auth,async (user)=>{
     const emailStatus = document.getElementById("vEmailStatus");
     const accountButton = document.getElementById("accountButton");
     const accountSubtitle = document.getElementById("vAccountSubtitle");
+    const verifyEmailBtn = document.getElementById("vVerifyEmail");
 
     const authTabs = document.querySelector(".auth-tabs");
 
 
     if(user){
 
-      await user.reload();
+await auth.currentUser.reload();
 
-      const currentUser = auth.currentUser;
+const currentUser = auth.currentUser;
 
 document.getElementById("vAccountName").value =
     user.displayName || "No name set";
@@ -1311,27 +1319,24 @@ document.getElementById("vAccountName").value =
 
 }
 
-if(emailStatus){
+if (emailStatus) {
 
-if(currentUser.emailVerified){
+    if (currentUser.emailVerified) {
 
-    emailStatus.textContent = "Verified";
+        emailStatus.textContent = "Verified";
 
-    verifyEmailBtn.style.display = "none";
+        verifyEmailBtn.style.display = "none";
 
+    } else {
 
-} else {
+        emailStatus.textContent = "Not verified";
 
-    emailStatus.textContent = "Not verified";
+        verifyEmailBtn.style.display = "inline-flex";
 
-    verifyEmailBtn.style.display = "block";
+        verifyEmailBtn.dataset.state = "";
 
-    verifyEmailBtn.dataset.state = "";
-
-    verifyEmailBtn.textContent = "Verify";
-
-}
-
+        verifyEmailBtn.textContent = "Verify";
+    }
 }
 
 if(accountUID){
